@@ -1,7 +1,7 @@
 {
   "name": "irismail",
   "version": "0.1.0",
-  "description": "A modular email and OTP service with Shadcn UI support",
+  "description": "Simple email sending service and beautiful OTP input components for React",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -28,14 +28,19 @@
     "build": "tsup src/index.ts src/server/index.ts src/react/index.ts --format cjs,esm --dts --clean",
     "dev": "tsup src/index.ts src/server/index.ts src/react/index.ts --format cjs,esm --dts --watch",
     "lint": "eslint src/**",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "site": "npm --prefix site run dev",
+    "site:build": "npm --prefix site run build",
+    "site:start": "npm --prefix site run start"
   },
   "keywords": [
     "email",
     "otp",
+    "otp-input",
     "shadcn",
     "react",
-    "authentication"
+    "nodemailer",
+    "smtp"
   ],
   "author": "",
   "license": "ISC",
@@ -43,8 +48,7 @@
     "clsx": "^2.1.1",
     "input-otp": "^1.4.2",
     "nodemailer": "^7.0.10",
-    "tailwind-merge": "^2.3.0",
-    "zod": "^3.23.8"
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",

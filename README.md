@@ -1,14 +1,27 @@
 # IrisMail
 
-A modular, secure, and easy-to-use Email and OTP service for Next.js applications, with built-in Shadcn UI support.
+A modular, secure, and easy-to-use Gmail-based Email and OTP service for Next.js applications, with built-in Shadcn UI support.
 
 ## Features
 
--   📧 **Email Service**: Simple wrapper around Nodemailer for sending emails.
--   🔐 **Secure OTP**: Server-side OTP generation, encryption, and validation.
--   🎨 **Shadcn UI**: Ready-to-use OTP Input component compatible with Shadcn UI.
--   ⚡ **React Hook**: `useOTP` hook for managing timers, rate limiting, and resend cooldowns.
--   🛡️ **Type-Safe**: Built with TypeScript.
+- 📧 **Email Service**: Simple Gmail-based email sending with minimal configuration.
+- 🔐 **Secure OTP**: Server-side OTP generation, encryption, and validation.
+- 🎨 **OTP UI Kit**: `InputOTPField`, slots, separators, and variants inspired by modern UI libraries.
+- ⚡ **React Hook**: `useOTP` hook for managing timers, rate limiting, and resend cooldowns.
+- 🛡️ **Type-Safe**: Built with TypeScript.
+- ⚙️ **Zero Config**: Just add your Gmail credentials - no SMTP configuration needed!
+
+## Documentation & playground
+
+Spin up the Astro-powered docs site (installation instructions, OTP playground, API guides):
+
+```bash
+npm run docs
+# or open docs locally
+cd docs && npm install && npm run dev
+```
+
+Production builds live under `docs/dist` via `npm run docs:build`.
 
 ## Installation
 
@@ -24,7 +37,9 @@ pnpm add irismail
 
 ### 1. Server-Side Setup (API Routes)
 
-Initialize the service with your email configuration and a secret key for encryption.
+Initialize the service with your Gmail credentials only - SMTP settings are auto-configured.
+
+> **Note:** You'll need to generate a [Gmail App Password](https://support.google.com/accounts/answer/185833) for the `GMAIL_PASSWORD` environment variable.
 
 ```typescript
 // app/api/send-otp/route.ts
@@ -33,18 +48,14 @@ import { NextResponse } from 'next/server';
 
 const irismail = new IrisMailService({
   email: {
-    transport: {
-      host: 'smtp.gmail.com',
-      port: 587,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
+    auth: {
+      user: process.env.GMAIL_USERNAME,
+      pass: process.env.GMAIL_PASSWORD,
     },
     defaults: {
       from: {
         name: 'My App',
-        address: process.env.GMAIL_USER,
+        address: process.env.GMAIL_USERNAME,
       },
     },
   },
@@ -121,7 +132,9 @@ Want to test the package locally before publishing? We've included a complete ex
 2. **Set up environment variables**:
    ```bash
    cp .env.example .env.local
-   # Edit .env.local with your Gmail credentials and secret key
+   # Edit .env.local with your Gmail credentials:
+   # GMAIL_USERNAME=your-email@gmail.com
+   # GMAIL_PASSWORD=your-app-password
    ```
 
 3. **Run the development server**:
