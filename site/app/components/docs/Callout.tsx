@@ -10,62 +10,73 @@ interface CalloutProps {
 
 const variants: Record<
   CalloutVariant,
-  { bg: string; border: string; icon: string; iconBg: string; title: string }
+  { border: string; bg: string; icon: string; title: string }
 > = {
   info: {
-    bg: 'bg-indigo-500/10',
-    border: 'border-indigo-500/30',
-    icon: 'ℹ',
-    iconBg: 'bg-indigo-500/20 text-indigo-300',
-    title: 'text-indigo-200',
+    border: 'border-zinc-700',
+    bg: 'bg-zinc-800/30',
+    icon: 'text-zinc-400',
+    title: 'text-zinc-200',
   },
   warning: {
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/30',
-    icon: '⚠',
-    iconBg: 'bg-amber-500/20 text-amber-300',
+    border: 'border-amber-900/50',
+    bg: 'bg-amber-950/20',
+    icon: 'text-amber-500',
     title: 'text-amber-200',
   },
   success: {
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/30',
-    icon: '✓',
-    iconBg: 'bg-emerald-500/20 text-emerald-300',
+    border: 'border-emerald-900/50',
+    bg: 'bg-emerald-950/20',
+    icon: 'text-emerald-500',
     title: 'text-emerald-200',
   },
   error: {
-    bg: 'bg-red-500/10',
-    border: 'border-red-500/30',
-    icon: '✕',
-    iconBg: 'bg-red-500/20 text-red-300',
+    border: 'border-red-900/50',
+    bg: 'bg-red-950/20',
+    icon: 'text-red-500',
     title: 'text-red-200',
   },
+};
+
+const icons: Record<CalloutVariant, ReactNode> = {
+  info: (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+    </svg>
+  ),
+  warning: (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+  ),
+  success: (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  error: (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
 };
 
 export function Callout({ variant = 'info', title, children }: CalloutProps) {
   const styles = variants[variant];
 
   return (
-    <div className={`rounded-xl border ${styles.border} ${styles.bg} p-4`}>
+    <div className={`rounded-lg border ${styles.border} ${styles.bg} px-4 py-3`}>
       <div className="flex gap-3">
-        <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-sm ${styles.iconBg}`}
-        >
-          {styles.icon}
+        <span className={`mt-0.5 shrink-0 ${styles.icon}`}>
+          {icons[variant]}
         </span>
         <div className="min-w-0">
           {title && (
-            <p className={`mb-1 font-medium ${styles.title}`}>{title}</p>
+            <p className={`mb-1 text-sm font-medium ${styles.title}`}>{title}</p>
           )}
-          <div className="text-sm text-white/70">{children}</div>
+          <div className="text-sm text-zinc-400">{children}</div>
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
-
-
