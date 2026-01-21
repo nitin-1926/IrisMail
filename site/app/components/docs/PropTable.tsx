@@ -12,30 +12,36 @@ interface PropTableProps {
 
 export function PropTable({ props }: PropTableProps) {
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10">
+    <div className="overflow-hidden rounded-lg border border-zinc-800">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-white/10 bg-white/5">
-            <th className="px-5 py-3.5 text-left font-medium text-white/70">Prop</th>
-            <th className="px-5 py-3.5 text-left font-medium text-white/70">Type</th>
-            <th className="px-5 py-3.5 text-left font-medium text-white/70">Default</th>
-            <th className="px-5 py-3.5 text-left font-medium text-white/70">Description</th>
+          <tr className="border-b border-zinc-800 bg-zinc-900/50">
+            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Prop</th>
+            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Type</th>
+            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Default</th>
+            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Description</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-zinc-800/50">
           {props.map((prop) => (
             <tr key={prop.name}>
-              <td className="px-5 py-3.5">
-                <code className="font-mono text-indigo-300">{prop.name}</code>
+              <td className="px-4 py-2.5">
+                <code className="text-sm text-zinc-300">{prop.name}</code>
                 {prop.required && (
-                  <span className="ml-1.5 text-xs text-red-400">*</span>
+                  <span className="ml-1 text-xs text-red-400">*</span>
                 )}
               </td>
-              <td className="px-5 py-3.5 text-white/60">{prop.type}</td>
-              <td className="px-5 py-3.5 text-white/40">
-                {prop.default ?? '—'}
+              <td className="px-4 py-2.5">
+                <code className="text-xs text-zinc-500">{prop.type}</code>
               </td>
-              <td className="px-5 py-3.5 text-white/60">{prop.description}</td>
+              <td className="px-4 py-2.5 text-zinc-600">
+                {prop.default ? (
+                  <code className="text-xs">{prop.default}</code>
+                ) : (
+                  '—'
+                )}
+              </td>
+              <td className="px-4 py-2.5 text-zinc-500">{prop.description}</td>
             </tr>
           ))}
         </tbody>
@@ -43,9 +49,3 @@ export function PropTable({ props }: PropTableProps) {
     </div>
   );
 }
-
-
-
-
-
-
