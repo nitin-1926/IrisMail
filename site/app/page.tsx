@@ -307,23 +307,26 @@ const mail = new IrisMail({
 
 export async function POST(req: Request) {
   const { to, subject, html } = await req.json();
-
+  
   const result = await mail.sendMail({
     from: process.env.GMAIL_USER!,
-    to,
-    subject,
-    html,
+    to, subject, html,
   });
-
+  
   return Response.json(result);
 }`}
                 language="typescript"
               />
             </div>
+
+            {/* Client */}
             <div>
-              <h3 className="mb-4 font-semibold text-white">React OTP Input</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="flex h-6 w-6 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 text-xs font-medium text-zinc-400">2</span>
+                <span className="text-sm font-medium text-white">Client — OTP verification</span>
+              </div>
               <CodeBlock
-                filename="components/verify-form.tsx"
+                filename="components/verify.tsx"
                 code={`'use client';
 
 import { useState } from 'react';
@@ -333,34 +336,52 @@ export function VerifyForm() {
   const [code, setCode] = useState('');
 
   const handleComplete = async (value: string) => {
-    // Verify the OTP code
     const res = await fetch('/api/verify', {
       method: 'POST',
       body: JSON.stringify({ code: value }),
     });
+    // Handle response...
   };
 
-  return (
-    <OTP
-      value={code}
-      onChange={setCode}
-      onComplete={handleComplete}
-    />
-  );
+  return <OTP value={code} onChange={setCode} onComplete={handleComplete} />;
 }`}
-                language="typescript"
+                language="tsx"
               />
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="border-t border-zinc-800/50">
+          <div className="mx-auto max-w-6xl px-6 py-16">
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-xl font-medium text-white">Ready to get started?</h2>
+              <p className="mt-2 text-zinc-500">Install the package and check out the docs. If you find it useful, star us on GitHub!</p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/docs/email"
+                  className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
+                >
+                  Read Documentation
+                </Link>
+                <a
+                  href={GITHUB_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-zinc-800 px-4 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z" />
+                  </svg>
+                  Star on GitHub
+                </a>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-8">
-        <div className="mx-auto max-w-6xl px-6 text-center text-sm text-white/40">
-          IrisMail — Simple email sending & beautiful OTP components
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
