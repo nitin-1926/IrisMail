@@ -2,24 +2,24 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { OTP, InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from 'irismail/react';
+import { OTP } from 'irismail/react';
+import type { OTPTheme } from 'irismail/react';
+
+type OTPSize = 'sm' | 'md' | 'lg';
+import { Header, Footer } from '../layout';
+import { CodeBlock } from '../docs';
+import { GITHUB_URL } from '../../lib/constants';
 
 export default function OTPShowcasePage() {
-  // Simple OTP demo
-  const [simpleOtp, setSimpleOtp] = useState('');
-  
-  // Error state demo
-  const [errorOtp, setErrorOtp] = useState('');
-  const [showError, setShowError] = useState(false);
-  
-  // Composition demo
-  const [compositionOtp, setCompositionOtp] = useState('');
-  
   // Playground state
   const [playgroundOtp, setPlaygroundOtp] = useState('');
   const [playgroundLength, setPlaygroundLength] = useState(6);
   const [playgroundDisabled, setPlaygroundDisabled] = useState(false);
   const [playgroundError, setPlaygroundError] = useState(false);
+  const [playgroundTheme, setPlaygroundTheme] = useState<OTPTheme>('dark');
+  const [playgroundSlotSize, setPlaygroundSlotSize] = useState<OTPSize>('md');
+  const [playgroundSeparator, setPlaygroundSeparator] = useState(false);
+  const [playgroundGroupSize, setPlaygroundGroupSize] = useState<number | undefined>(undefined);
   const [copied, setCopied] = useState(false);
 
   // Generate code based on playground settings
@@ -27,6 +27,10 @@ export default function OTPShowcasePage() {
     const props: string[] = [];
     
     if (playgroundLength !== 6) props.push(`length={${playgroundLength}}`);
+    if (playgroundTheme !== 'dark') props.push(`theme="${playgroundTheme}"`);
+    if (playgroundSlotSize !== 'md') props.push(`slotSize="${playgroundSlotSize}"`);
+    if (playgroundSeparator) props.push('separator');
+    if (playgroundGroupSize !== undefined) props.push(`groupSize={${playgroundGroupSize}}`);
     if (playgroundDisabled) props.push('disabled');
     if (playgroundError) props.push('error');
     props.push('value={code}');
@@ -55,80 +59,105 @@ function VerifyForm() {
   const handleLengthChange = (newLength: number) => {
     setPlaygroundLength(newLength);
     setPlaygroundOtp('');
+    // Reset groupSize if it doesn't make sense for new length
+    if (playgroundGroupSize && playgroundGroupSize > newLength) {
+      setPlaygroundGroupSize(undefined);
+    }
   };
 
-  return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0f]/90 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="text-lg font-semibold tracking-wide">IrisMail</span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-white/70 md:flex">
-            <Link href="/components/otp" className="text-white">
-              Components
-            </Link>
-            <Link href="/docs/email" className="transition hover:text-white">
-              Docs
-            </Link>
-          </nav>
-        </div>
-      </header>
+  // Calculate available group sizes based on length
+  const availableGroupSizes = [2, 3, 4].filter(size => size < playgroundLength);
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <main className="flex-1 mx-auto w-full max-w-4xl px-6 py-10">
         {/* Page Header */}
-        <div className="mb-12">
-          <p className="text-sm uppercase tracking-[0.3em] text-indigo-400/80">Components</p>
-          <h1 className="mt-3 text-4xl font-bold text-white md:text-5xl">OTP Input</h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/60">
-            Accessible one-time password input with copy-paste support and full keyboard navigation.
+        <div className="mb-10">
+          <div className="flex items-center gap-2 text-sm text-zinc-600">
+            <span>Components</span>
+            <span className="text-zinc-700">/</span>
+            <span className="text-zinc-400">OTP Input</span>
+          </div>
+          <h1 className="mt-3 text-2xl font-semibold text-white">OTP Input</h1>
+          <p className="mt-2 text-zinc-500">
+            Accessible one-time password input with copy-paste support and keyboard navigation.
           </p>
         </div>
 
         {/* Interactive Playground */}
-        <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">Playground</h2>
-            <button
-              onClick={() => setPlaygroundOtp('')}
-              className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:border-white/20 hover:text-white"
-            >
-              Reset
-            </button>
+        <section className="rounded-lg border border-zinc-800 overflow-hidden">
+          {/* Playground Header */}
+          <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-4 py-3">
+            <h2 className="text-sm font-medium text-white">Playground</h2>
+            <div className="flex items-center gap-2">
+              {/* Theme Toggle */}
+              <div className="flex items-center rounded-md border border-zinc-800 p-0.5">
+                <button
+                  onClick={() => setPlaygroundTheme('dark')}
+                  className={`flex items-center justify-center rounded px-2 py-1 text-xs transition-colors ${
+                    playgroundTheme === 'dark' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setPlaygroundTheme('light')}
+                  className={`flex items-center justify-center rounded px-2 py-1 text-xs transition-colors ${
+                    playgroundTheme === 'light' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+                </button>
+              </div>
+              <button
+                onClick={() => setPlaygroundOtp('')}
+                className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
+              >
+                Reset
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-8 xl:flex-row">
+          <div className="flex flex-col lg:flex-row">
             {/* OTP Preview */}
-            <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-white/5 bg-black/20 p-10">
+            <div 
+              className={`flex flex-1 items-center justify-center p-10 ${
+                playgroundTheme === 'dark' ? 'bg-zinc-950' : 'bg-white'
+              }`}
+            >
               <OTP
                 length={playgroundLength}
                 value={playgroundOtp}
                 onChange={setPlaygroundOtp}
                 disabled={playgroundDisabled}
                 error={playgroundError}
+                theme={playgroundTheme}
+                slotSize={playgroundSlotSize}
+                separator={playgroundSeparator}
+                groupSize={playgroundGroupSize}
               />
-              {/* {playgroundOtp && (
-                <p className="mt-4 text-sm text-white/50">
-                  Value: <span className="font-mono text-white">{playgroundOtp}</span>
-                </p>
-              )} */}
             </div>
 
             {/* Controls */}
-            <div className="w-full space-y-5 xl:w-72">
+            <div className="w-full border-t border-zinc-800 bg-zinc-900/30 p-4 lg:w-56 lg:border-l lg:border-t-0">
               {/* Length */}
-              <div>
-                <p className="mb-3 text-xs font-medium uppercase tracking-wider text-white/40">Length</p>
-                <div className="flex gap-2">
+              <div className="mb-4">
+                <p className="mb-2 text-xs font-medium text-zinc-500">Length</p>
+                <div className="flex rounded-md border border-zinc-800 p-0.5">
                   {[4, 6, 8].map((len) => (
                     <button
                       key={len}
                       onClick={() => handleLengthChange(len)}
-                      className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                      className={`flex-1 rounded py-1.5 text-xs font-medium transition-colors ${
                         playgroundLength === len
-                          ? 'bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/40'
-                          : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                          ? 'bg-zinc-800 text-white'
+                          : 'text-zinc-500 hover:text-zinc-300'
                       }`}
                     >
                       {len}
