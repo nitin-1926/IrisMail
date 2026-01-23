@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { DocsLayout } from '../../components/layout';
 import { CodeBlock, PropTable, Callout } from '../../components/docs';
+import { GITHUB_URL } from '../../lib/constants';
 
 const configProps = [
   {
@@ -45,84 +47,68 @@ const sendMailProps = [
 
 export default function EmailDocsPage() {
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0f]/90 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="text-lg font-semibold tracking-wide">IrisMail</span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-white/70 md:flex">
-            <Link href="/components/otp" className="transition hover:text-white">
-              Components
-            </Link>
-            <Link href="/docs/email" className="text-white">
-              Docs
-            </Link>
-          </nav>
+    <DocsLayout>
+      {/* Page Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 text-sm text-zinc-600">
+          <span>Docs</span>
+          <span className="text-zinc-700">/</span>
+          <span className="text-zinc-400">Email</span>
         </div>
-      </header>
+        <h1 className="mt-3 text-2xl font-semibold text-white">Email Service</h1>
+        <p className="mt-2 text-zinc-500">
+          Send emails with Gmail in just a few lines of code.
+        </p>
+      </div>
 
-      <main className="mx-auto max-w-4xl px-6 py-12">
-        {/* Page Header */}
-        <div className="mb-10">
-          <p className="text-sm uppercase tracking-[0.3em] text-indigo-400/80">Documentation</p>
-          <h1 className="mt-3 text-4xl font-bold text-white">Email Service</h1>
-          <p className="mt-4 text-lg text-white/60">
-            Send emails with Gmail in just a few lines of code. No SMTP configuration needed.
+      {/* Quick Links */}
+      <div className="mb-8 flex gap-2">
+        <Link
+          href="/docs/email"
+          className="rounded-md bg-zinc-800 px-3 py-1.5 text-sm font-medium text-white"
+        >
+          Email
+        </Link>
+        <Link
+          href="/docs/otp-input"
+          className="rounded-md px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-800/50 hover:text-zinc-300"
+        >
+          OTP Input
+        </Link>
+      </div>
+
+      <div className="space-y-10">
+        {/* Installation */}
+        <section>
+          <h2 className="mb-3 text-lg font-medium text-white">Installation</h2>
+          <CodeBlock code="npm install irismail" language="bash" />
+        </section>
+
+        {/* Quick Start */}
+        <section>
+          <h2 className="mb-3 text-lg font-medium text-white">Quick Start</h2>
+          <p className="mb-4 text-sm text-zinc-500">
+            Import <code>IrisMail</code> from <code>irismail/server</code> and create an instance with your Gmail credentials.
           </p>
-        </div>
 
-        {/* Quick Links */}
-        <div className="mb-10 flex gap-3">
-          <Link
-            href="/docs/email"
-            className="rounded-lg bg-indigo-500/20 px-4 py-2 text-sm font-medium text-indigo-300 ring-1 ring-indigo-500/40"
-          >
-            Email
-          </Link>
-          <Link
-            href="/docs/otp-input"
-            className="rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white"
-          >
-            OTP Input
-          </Link>
-        </div>
+          <Callout variant="warning" title="Gmail App Password Required">
+            You need to generate a{' '}
+            <a
+              href="https://support.google.com/accounts/answer/185833"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-zinc-300"
+            >
+              Gmail App Password
+            </a>{' '}
+            for authentication. Your regular Gmail password won&apos;t work.
+          </Callout>
 
-        <div className="space-y-12">
-          {/* Installation */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Installation</h2>
-            <CodeBlock code="npm install irismail" language="bash" />
-          </section>
-
-          {/* Quick Start */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Quick Start</h2>
-            <p className="mb-4 text-white/60">
-              Import <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">IrisMail</code> from{' '}
-              <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">irismail/server</code> and
-              create an instance with your Gmail credentials.
-            </p>
-
-            <Callout variant="warning" title="Gmail App Password Required">
-              You need to generate a{' '}
-              <a
-                href="https://support.google.com/accounts/answer/185833"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-white"
-              >
-                Gmail App Password
-              </a>{' '}
-              for authentication. Your regular Gmail password won&apos;t work.
-            </Callout>
-
-            <div className="mt-6">
-              <CodeBlock
-                filename="app/api/send-email/route.ts"
-                language="typescript"
-                code={`import { IrisMail } from 'irismail/server';
+          <div className="mt-5">
+            <CodeBlock
+              filename="app/api/send-email/route.ts"
+              language="typescript"
+              code={`import { IrisMail } from 'irismail/server';
 
 const mail = new IrisMail({
   auth: {
@@ -131,7 +117,6 @@ const mail = new IrisMail({
   },
 });
 
-// Send an email
 const result = await mail.sendMail({
   from: process.env.GMAIL_USER!,
   to: 'user@example.com',
@@ -141,58 +126,58 @@ const result = await mail.sendMail({
 
 console.log(result);
 // { success: true, messageId: '<unique-id@smtp.gmail.com>' }`}
-              />
-            </div>
-          </section>
+            />
+          </div>
+        </section>
 
-          {/* API Reference */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">API Reference</h2>
+        {/* API Reference */}
+        <section>
+          <h2 className="mb-5 text-lg font-medium text-white">API Reference</h2>
 
-            {/* Constructor */}
-            <div className="mb-8">
-              <h3 className="mb-4 text-lg font-semibold text-white">
-                <code className="text-indigo-300">new IrisMail(config)</code>
-              </h3>
-              <p className="mb-4 text-white/60">
-                Creates a new IrisMail instance configured for Gmail SMTP.
-              </p>
-              <PropTable props={configProps} />
-            </div>
+          {/* Constructor */}
+          <div className="mb-8">
+            <h3 className="mb-2 text-base font-medium text-white">
+              <code className="text-zinc-300">new IrisMail(config)</code>
+            </h3>
+            <p className="mb-4 text-sm text-zinc-500">
+              Creates a new IrisMail instance configured for Gmail SMTP.
+            </p>
+            <PropTable props={configProps} />
+          </div>
 
-            {/* sendMail */}
-            <div>
-              <h3 className="mb-4 text-lg font-semibold text-white">
-                <code className="text-indigo-300">mail.sendMail(options)</code>
-              </h3>
-              <p className="mb-4 text-white/60">
-                Sends an email and returns a promise with the result.
-              </p>
-              <PropTable props={sendMailProps} />
+          {/* sendMail */}
+          <div>
+            <h3 className="mb-2 text-base font-medium text-white">
+              <code className="text-zinc-300">mail.sendMail(options)</code>
+            </h3>
+            <p className="mb-4 text-sm text-zinc-500">
+              Sends an email and returns a promise with the result.
+            </p>
+            <PropTable props={sendMailProps} />
 
-              <div className="mt-6">
-                <p className="mb-3 text-sm font-medium text-white/70">Returns:</p>
-                <CodeBlock
-                  code={`interface SendMailResult {
+            <div className="mt-5">
+              <p className="mb-2 text-sm text-zinc-500">Returns:</p>
+              <CodeBlock
+                code={`interface SendMailResult {
   success: boolean;
   messageId: string;
 }`}
-                  language="typescript"
-                />
-              </div>
+                language="typescript"
+              />
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Next.js Example */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Next.js API Route</h2>
-            <p className="mb-4 text-white/60">
-              Full example of a Next.js API route that sends emails.
-            </p>
-            <CodeBlock
-              filename="app/api/send-email/route.ts"
-              language="typescript"
-              code={`import { IrisMail } from 'irismail/server';
+        {/* Next.js Example */}
+        <section>
+          <h2 className="mb-3 text-lg font-medium text-white">Next.js API Route</h2>
+          <p className="mb-4 text-sm text-zinc-500">
+            Full example of a Next.js API route that sends emails.
+          </p>
+          <CodeBlock
+            filename="app/api/send-email/route.ts"
+            language="typescript"
+            code={`import { IrisMail } from 'irismail/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 const mail = new IrisMail({
@@ -221,38 +206,53 @@ export async function POST(req: NextRequest) {
     );
   }
 }`}
-            />
-          </section>
+          />
+        </section>
 
-          {/* Environment Variables */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Environment Variables</h2>
-            <p className="mb-4 text-white/60">
-              Add these to your <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">.env.local</code> file:
-            </p>
-            <CodeBlock
-              filename=".env.local"
-              language="bash"
-              code={`GMAIL_USER=your-email@gmail.com
+        {/* Environment Variables */}
+        <section>
+          <h2 className="mb-3 text-lg font-medium text-white">Environment Variables</h2>
+          <p className="mb-4 text-sm text-zinc-500">
+            Add these to your <code>.env.local</code> file:
+          </p>
+          <CodeBlock
+            filename=".env.local"
+            language="bash"
+            code={`GMAIL_USER=your-email@gmail.com
 GMAIL_APP_PASSWORD=your-16-character-app-password`}
-            />
-          </section>
+          />
+        </section>
 
-          {/* CTA */}
-          <section className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-6">
-            <h2 className="text-xl font-semibold text-white">Need OTP Components?</h2>
-            <p className="mt-2 text-white/60">
-              Check out our beautiful, accessible OTP input components for React.
-            </p>
+        {/* CTA */}
+        <section className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-5">
+          <h2 className="text-base font-medium text-white">Need OTP Components?</h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Check out our OTP input components or star us on GitHub.
+          </p>
+          <div className="mt-3 flex gap-3">
             <Link
               href="/components/otp"
-              className="mt-4 inline-flex rounded-lg bg-indigo-500 px-5 py-2 font-medium text-white transition hover:bg-indigo-400"
+              className="inline-flex items-center gap-1.5 text-sm text-zinc-300 transition-colors hover:text-white"
             >
-              View OTP Components →
+              View OTP Components
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
             </Link>
-          </section>
-        </div>
-      </main>
-    </div>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+            >
+              <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z" />
+              </svg>
+              Star on GitHub
+            </a>
+          </div>
+        </section>
+      </div>
+    </DocsLayout>
   );
 }
