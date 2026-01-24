@@ -1,6 +1,6 @@
 {
   "name": "irismail",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple email sending service and beautiful OTP input components for React",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
