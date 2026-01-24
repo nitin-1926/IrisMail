@@ -310,6 +310,24 @@ type OTPProps = {
  *
  * // Custom length
  * <OTP length={4} value={code} onChange={setCode} />
+ *
+ * // With separator and custom group size
+ * <OTP length={6} groupSize={3} separator value={code} onChange={setCode} />
+ *
+ * // Light theme
+ * <OTP theme="light" value={code} onChange={setCode} />
+ *
+ * // Custom styling with classNames API
+ * <OTP
+ *   value={code}
+ *   onChange={setCode}
+ *   classNames={{
+ *     slot: "rounded-none first:rounded-l-md",
+ *     slotActive: "ring-2 ring-blue-500",
+ *     separator: "mx-4",
+ *     separatorLine: "bg-blue-500 w-4",
+ *   }}
+ * />
  * ```
  */
 const OTP = React.forwardRef<React.ElementRef<typeof OTPInput>, OTPProps>(
@@ -325,11 +343,28 @@ const OTP = React.forwardRef<React.ElementRef<typeof OTPInput>, OTPProps>(
       name,
       className,
       pattern = "^[0-9]*$",
+      theme,
+      slotSize,
+      separator = false,
+      groupSize,
+      classNames,
     },
     ref
   ) => {
+    const resolvedTheme: OTPTheme = theme ?? "dark";
+    const resolvedSlotSize: OTPSize = slotSize ?? "md";
+    
     // Generate slot indices
     const slotIndices = Array.from({ length }, (_, i) => i);
+    
+    // Calculate effective group size (default: half of length, or full length if no separator)
+    const effectiveGroupSize = groupSize ?? (separator ? Math.ceil(length / 2) : length);
+    
+    // Split indices into groups
+    const groups: number[][] = [];
+    for (let i = 0; i < length; i += effectiveGroupSize) {
+      groups.push(slotIndices.slice(i, i + effectiveGroupSize));
+    }
 
     return (
       <InputOTP
