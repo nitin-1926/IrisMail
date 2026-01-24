@@ -379,12 +379,20 @@ const OTP = React.forwardRef<React.ElementRef<typeof OTPInput>, OTPProps>(
         name={name}
         pattern={pattern}
         containerClassName={className}
+        theme={resolvedTheme}
+        slotSize={resolvedSlotSize}
+        classNames={classNames}
       >
-        <InputOTPGroup>
-          {slotIndices.map((index) => (
-            <InputOTPSlot key={index} index={index} />
-          ))}
-        </InputOTPGroup>
+        {groups.map((group, groupIndex) => (
+          <React.Fragment key={groupIndex}>
+            {groupIndex > 0 && separator && <InputOTPSeparator />}
+            <InputOTPGroup>
+              {group.map((index) => (
+                <InputOTPSlot key={index} index={index} />
+              ))}
+            </InputOTPGroup>
+          </React.Fragment>
+        ))}
       </InputOTP>
     );
   }
@@ -403,4 +411,4 @@ export {
   OTP,
 };
 
-export type { InputOTPProps, OTPProps };
+export type { InputOTPProps, OTPProps, OTPTheme, OTPSize, OTPClassNames };
