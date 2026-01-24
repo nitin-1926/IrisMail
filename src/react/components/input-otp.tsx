@@ -236,16 +236,21 @@ InputOTPSlot.displayName = "InputOTPSlot";
 const InputOTPSeparator = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div">
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="separator"
-    className={cn("flex items-center justify-center text-zinc-500", className)}
-    {...props}
-  >
-    <span className="w-3 h-0.5 bg-zinc-600 rounded-full" />
-  </div>
-));
+>(({ className, ...props }, ref) => {
+  const { theme, classNames } = React.useContext(InputOTPStyleContext);
+  const colors = themeClasses[theme];
+
+  return (
+    <div
+      ref={ref}
+      role="separator"
+      className={cn("flex items-center justify-center", className, classNames?.separator)}
+      {...props}
+    >
+      <span className={cn("w-3 h-0.5 rounded-full", colors.separator, classNames?.separatorLine)} />
+    </div>
+  );
+});
 InputOTPSeparator.displayName = "InputOTPSeparator";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -273,6 +278,16 @@ type OTPProps = {
   className?: string;
   /** Pattern to match input against (default: digits only) */
   pattern?: string;
+  /** Color theme (default: "dark") */
+  theme?: OTPTheme;
+  /** Size of the slots (default: "md") */
+  slotSize?: OTPSize;
+  /** Show separator between groups */
+  separator?: boolean;
+  /** Number of slots per group (default: half of length) */
+  groupSize?: number;
+  /** ClassNames API for style customization */
+  classNames?: OTPClassNames;
 };
 
 /**
