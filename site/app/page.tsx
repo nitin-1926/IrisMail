@@ -7,7 +7,9 @@ const features = [
   {
     title: 'Gmail Email Service',
     description: 'Send emails with just your Gmail credentials. No SMTP configuration needed.',
-    code: `const mail = new IrisMail({
+    code: `import { IrisMail } from 'irismail/server';
+
+const mail = new IrisMail({
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
@@ -22,35 +24,25 @@ await mail.sendMail({
 });`,
   },
   {
-    title: 'OTP Input Components',
-    description: 'Beautiful, accessible OTP inputs with copy-paste support and customizable styling.',
-    code: `<InputOTP maxLength={6} value={otp} onChange={setOtp}>
-  <InputOTPGroup>
-    <InputOTPSlot index={0} />
-    <InputOTPSlot index={1} />
-    <InputOTPSlot index={2} />
-  </InputOTPGroup>
-  <InputOTPSeparator />
-  <InputOTPGroup>
-    <InputOTPSlot index={3} />
-    <InputOTPSlot index={4} />
-    <InputOTPSlot index={5} />
-  </InputOTPGroup>
-</InputOTP>`,
+    title: 'OTP Input Component',
+    description: 'Beautiful, accessible OTP input with copy-paste support and customizable styling.',
+    code: `import { OTP } from 'irismail/react';
+
+function VerifyForm() {
+  const [code, setCode] = useState('');
+
+  return (
+    <OTP
+      value={code}
+      onChange={setCode}
+      onComplete={(value) => verify(value)}
+    />
+  );
+}`,
   },
 ];
 
 const links = [
-  {
-    title: 'Email Playground',
-    description: 'Test email sending in real-time.',
-    href: '/playground',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
   {
     title: 'OTP Components',
     description: 'Interactive component showcase.',
@@ -67,7 +59,7 @@ const links = [
     href: '/docs/email',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
   },
@@ -96,9 +88,6 @@ export default function Home() {
             </span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-medium text-white/70 md:flex">
-            <Link href="/playground" className="transition hover:text-white">
-              Playground
-            </Link>
             <Link href="/components/otp" className="transition hover:text-white">
               Components
             </Link>
@@ -123,16 +112,16 @@ export default function Home() {
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
-              href="/playground"
+              href="/components/otp"
               className="rounded-lg bg-indigo-500 px-6 py-3 font-medium text-white transition hover:bg-indigo-400"
             >
-              Try the Playground
+              Try OTP Component
             </Link>
             <Link
-              href="/components/otp"
+              href="/docs/email"
               className="rounded-lg border border-white/20 px-6 py-3 font-medium text-white/80 transition hover:border-white/40 hover:text-white"
             >
-              View Components
+              View Docs
             </Link>
           </div>
 
@@ -179,7 +168,7 @@ export default function Home() {
           <h2 className="mb-2 text-2xl font-semibold text-white">Explore</h2>
           <p className="mb-8 text-white/50">Jump into the docs or try the interactive demos.</p>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -237,30 +226,25 @@ export async function POST(req: Request) {
                 code={`'use client';
 
 import { useState } from 'react';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator,
-} from 'irismail/react';
+import { OTP } from 'irismail/react';
 
 export function VerifyForm() {
-  const [otp, setOtp] = useState('');
+  const [code, setCode] = useState('');
+
+  const handleComplete = async (value: string) => {
+    // Verify the OTP code
+    const res = await fetch('/api/verify', {
+      method: 'POST',
+      body: JSON.stringify({ code: value }),
+    });
+  };
 
   return (
-    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
-      <InputOTPGroup>
-        <InputOTPSlot index={0} />
-        <InputOTPSlot index={1} />
-        <InputOTPSlot index={2} />
-      </InputOTPGroup>
-      <InputOTPSeparator />
-      <InputOTPGroup>
-        <InputOTPSlot index={3} />
-        <InputOTPSlot index={4} />
-        <InputOTPSlot index={5} />
-      </InputOTPGroup>
-    </InputOTP>
+    <OTP
+      value={code}
+      onChange={setCode}
+      onComplete={handleComplete}
+    />
   );
 }`}
                 language="typescript"
