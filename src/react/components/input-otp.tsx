@@ -149,13 +149,17 @@ InputOTP.displayName = "InputOTP";
 const InputOTPGroup = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div">
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center gap-2", className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = React.useContext(InputOTPStyleContext);
+  
+  return (
+    <div
+      ref={ref}
+      className={cn("flex items-center gap-2", className, classNames?.group)}
+      {...props}
+    />
+  );
+});
 InputOTPGroup.displayName = "InputOTPGroup";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -171,38 +175,53 @@ const InputOTPSlot = React.forwardRef<
   InputOTPSlotProps
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext);
-  const { error } = React.useContext(InputOTPStyleContext);
+  const { error, theme, slotSize, classNames } = React.useContext(InputOTPStyleContext);
   const slot = inputOTPContext.slots[index];
   const { char, hasFakeCaret, isActive } = slot;
+
+  const colors = themeClasses[theme];
 
   return (
     <div
       ref={ref}
       className={cn(
         // Base styles
-        "relative flex h-12 w-10 items-center justify-center",
-        "border-2 rounded-lg",
-        "font-mono text-lg font-medium",
-        "transition-all duration-150",
-        // Default state
-        "border-zinc-700 bg-zinc-900 text-white",
+        "relative flex items-center justify-center",
+        "border rounded-md",
+        "font-mono font-medium",
+        "transition-colors duration-150",
+        // Size
+        slotSizeClasses[slotSize],
+        // Default state (theme-aware)
+        colors.slot.base,
+        // Custom base slot class
+        classNames?.slot,
         // Filled state
-        char && "border-zinc-500",
+        char && colors.slot.filled,
+        char && classNames?.slotFilled,
         // Active/focus state
-        isActive && "ring-2 ring-offset-2 ring-offset-zinc-950 ring-indigo-500 border-indigo-500",
+        isActive && colors.slot.active,
+        isActive && classNames?.slotActive,
         // Error state
-        error && "border-red-500/70 bg-red-500/10",
-        error && isActive && "ring-red-500",
+        error && colors.slot.error,
+        error && isActive && colors.slot.errorActive,
+        error && classNames?.slotError,
         className
       )}
       data-active={isActive}
       data-filled={Boolean(char)}
+      data-error={error}
       {...props}
     >
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-5 w-0.5 animate-caret-blink rounded-full bg-indigo-400" />
+          <div className={cn(
+            "animate-caret-blink rounded-full",
+            caretSizeClasses[slotSize],
+            colors.caret,
+            classNames?.caret
+          )} />
         </div>
       )}
     </div>
