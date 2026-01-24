@@ -53,9 +53,6 @@ export default function EmailDocsPage() {
             <span className="text-lg font-semibold tracking-wide">IrisMail</span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-medium text-white/70 md:flex">
-            <Link href="/playground" className="transition hover:text-white">
-              Playground
-            </Link>
             <Link href="/components/otp" className="transition hover:text-white">
               Components
             </Link>
@@ -243,15 +240,15 @@ GMAIL_APP_PASSWORD=your-16-character-app-password`}
 
           {/* CTA */}
           <section className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-6">
-            <h2 className="text-xl font-semibold text-white">Try it out!</h2>
+            <h2 className="text-xl font-semibold text-white">Need OTP Components?</h2>
             <p className="mt-2 text-white/60">
-              Head over to the playground to test email sending with your credentials.
+              Check out our beautiful, accessible OTP input components for React.
             </p>
             <Link
-              href="/playground"
+              href="/components/otp"
               className="mt-4 inline-flex rounded-lg bg-indigo-500 px-5 py-2 font-medium text-white transition hover:bg-indigo-400"
             >
-              Go to Playground →
+              View OTP Components →
             </Link>
           </section>
         </div>

@@ -3,51 +3,10 @@ import { CodeBlock, PropTable, Callout } from '../../components/docs';
 
 const otpProps = [
   {
-    name: 'digits',
+    name: 'length',
     type: 'number',
     default: '6',
     description: 'Number of OTP digits',
-  },
-  {
-    name: 'type',
-    type: "'numeric' | 'alphanumeric' | 'alphabetic'",
-    default: "'numeric'",
-    description: 'Input validation type',
-  },
-  {
-    name: 'groupSize',
-    type: 'number',
-    description: 'Group size for visual grouping with separators',
-  },
-  {
-    name: 'separator',
-    type: "'none' | 'dash' | 'dot' | 'slash'",
-    default: "'dash'",
-    description: 'Separator style between groups',
-  },
-  {
-    name: 'size',
-    type: "'sm' | 'md' | 'lg'",
-    default: "'md'",
-    description: 'Size of input slots',
-  },
-  {
-    name: 'variant',
-    type: "'outline' | 'filled' | 'underline'",
-    default: "'outline'",
-    description: 'Visual style variant',
-  },
-  {
-    name: 'accent',
-    type: "'iris' | 'blush' | 'emerald' | 'slate'",
-    default: "'iris'",
-    description: 'Accent color for focus states',
-  },
-  {
-    name: 'status',
-    type: "'default' | 'error' | 'success'",
-    default: "'default'",
-    description: 'Validation status',
   },
   {
     name: 'value',
@@ -71,34 +30,32 @@ const otpProps = [
     description: 'Disable the input',
   },
   {
-    name: 'label',
-    type: 'ReactNode',
-    description: 'Label text above the input',
-  },
-  {
-    name: 'description',
-    type: 'ReactNode',
-    description: 'Description text below the label',
-  },
-  {
-    name: 'helperText',
-    type: 'ReactNode',
-    description: 'Helper text below the input',
-  },
-  {
-    name: 'errorText',
-    type: 'ReactNode',
-    description: "Error message (shown when status='error')",
-  },
-  {
-    name: 'successText',
-    type: 'ReactNode',
-    description: "Success message (shown when status='success')",
-  },
-  {
-    name: 'required',
+    name: 'error',
     type: 'boolean',
-    description: 'Show required indicator on label',
+    default: 'false',
+    description: 'Show error styling',
+  },
+  {
+    name: 'autoFocus',
+    type: 'boolean',
+    default: 'false',
+    description: 'Auto focus first slot on mount',
+  },
+  {
+    name: 'name',
+    type: 'string',
+    description: 'Name attribute for form integration',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    description: 'Additional className for the container',
+  },
+  {
+    name: 'pattern',
+    type: 'string',
+    default: '^[0-9]*$',
+    description: 'Regex pattern to match input against',
   },
 ];
 
@@ -107,7 +64,6 @@ const advancedComponents = [
   { name: 'InputOTPGroup', desc: 'Groups slots together visually' },
   { name: 'InputOTPSlot', desc: 'Individual digit input slot' },
   { name: 'InputOTPSeparator', desc: 'Visual separator between groups' },
-  { name: 'InputOTPField', desc: 'Wrapper with label and messages' },
 ];
 
 export default function OTPInputDocsPage() {
@@ -120,9 +76,6 @@ export default function OTPInputDocsPage() {
             <span className="text-lg font-semibold tracking-wide">IrisMail</span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-medium text-white/70 md:flex">
-            <Link href="/playground" className="transition hover:text-white">
-              Playground
-            </Link>
             <Link href="/components/otp" className="transition hover:text-white">
               Components
             </Link>
@@ -173,8 +126,8 @@ export default function OTPInputDocsPage() {
           <section>
             <h2 className="mb-4 text-2xl font-semibold text-white">Basic Usage</h2>
             <p className="mb-4 text-white/60">
-              The simplest way to use the OTP input. Just import{' '}
-              <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">OTP</code> and pass the required props.
+              Import <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">OTP</code> from{' '}
+              <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">irismail/react</code> and use it with controlled state.
             </p>
             <CodeBlock
               filename="components/verify-form.tsx"
@@ -185,122 +138,59 @@ import { useState } from 'react';
 import { OTP } from 'irismail/react';
 
 export function VerifyForm() {
-  const [otp, setOtp] = useState('');
+  const [code, setCode] = useState('');
 
   return (
     <OTP
-      digits={6}
-      value={otp}
-      onChange={setOtp}
-      onComplete={(code) => console.log('Submitted:', code)}
+      value={code}
+      onChange={setCode}
+      onComplete={(value) => console.log('Submitted:', value)}
     />
   );
 }`}
             />
           </section>
 
-          {/* With Grouping */}
+          {/* With Error State */}
           <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">With Grouping</h2>
+            <h2 className="mb-4 text-2xl font-semibold text-white">Error State</h2>
             <p className="mb-4 text-white/60">
-              Use <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">groupSize</code> to visually group
-              digits with separators.
-            </p>
-            <CodeBlock
-              filename="components/grouped-otp.tsx"
-              language="typescript"
-              code={`<OTP
-  digits={6}
-  groupSize={3}
-  separator="dash"
-  value={otp}
-  onChange={setOtp}
-/>`}
-            />
-          </section>
-
-          {/* With Label and Validation */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">With Label and Validation</h2>
-            <p className="mb-4 text-white/60">
-              Add labels, descriptions, and validation messages with simple props.
+              Use the <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">error</code> prop to show validation errors.
             </p>
             <CodeBlock
               filename="components/validated-otp.tsx"
               language="typescript"
-              code={`<OTP
-  digits={6}
-  groupSize={3}
-  label="Verification Code"
-  description="Enter the code sent to your email"
-  status={isValid ? 'success' : isError ? 'error' : 'default'}
-  errorText="Invalid code, please try again"
-  successText="Code verified!"
-  required
-  value={otp}
-  onChange={setOtp}
+              code={`const [code, setCode] = useState('');
+const [isInvalid, setIsInvalid] = useState(false);
+
+const handleComplete = async (value: string) => {
+  const isValid = await verifyCode(value);
+  setIsInvalid(!isValid);
+};
+
+<OTP
+  value={code}
+  onChange={setCode}
+  onComplete={handleComplete}
+  error={isInvalid}
 />`}
             />
           </section>
 
-          {/* Variants */}
+          {/* Custom Length */}
           <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Variants</h2>
+            <h2 className="mb-4 text-2xl font-semibold text-white">Custom Length</h2>
             <p className="mb-4 text-white/60">
-              Three built-in visual styles to match your design system.
+              Use the <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">length</code> prop to change the number of digits.
             </p>
             <CodeBlock
               language="typescript"
-              code={`// Outline (default) - bordered style with subtle shadows
-<OTP variant="outline" ... />
+              code={`// 4-digit OTP
+<OTP length={4} value={code} onChange={setCode} />
 
-// Filled - solid background with inner shadow
-<OTP variant="filled" ... />
-
-// Underline - minimal bottom-border style
-<OTP variant="underline" ... />`}
+// 8-digit OTP  
+<OTP length={8} value={code} onChange={setCode} />`}
             />
-          </section>
-
-          {/* Input Types */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Input Types</h2>
-            <p className="mb-4 text-white/60">
-              Control what characters users can enter with the{' '}
-              <code className="rounded bg-white/10 px-1.5 py-0.5 text-indigo-300">type</code> prop.
-            </p>
-            <CodeBlock
-              language="typescript"
-              code={`// Only numbers (default)
-<OTP type="numeric" ... />
-
-// Letters and numbers
-<OTP type="alphanumeric" ... />
-
-// Only letters
-<OTP type="alphabetic" ... />`}
-            />
-          </section>
-
-          {/* Accent Colors */}
-          <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Accent Colors</h2>
-            <p className="mb-4 text-white/60">
-              Choose from four accent colors for focus states and the caret.
-            </p>
-            <div className="flex gap-4">
-              {[
-                { name: 'iris', color: '#6366f1' },
-                { name: 'blush', color: '#ec4899' },
-                { name: 'emerald', color: '#10b981' },
-                { name: 'slate', color: '#64748b' },
-              ].map((accent) => (
-                <div key={accent.name} className="flex items-center gap-2">
-                  <span className="h-5 w-5 rounded-full" style={{ backgroundColor: accent.color }} />
-                  <code className="text-sm text-white/60">{accent.name}</code>
-                </div>
-              ))}
-            </div>
           </section>
 
           {/* OTP Props */}
@@ -311,9 +201,9 @@ export function VerifyForm() {
 
           {/* Advanced Usage */}
           <section>
-            <h2 className="mb-4 text-2xl font-semibold text-white">Advanced Usage (Composition Pattern)</h2>
+            <h2 className="mb-4 text-2xl font-semibold text-white">Composition Pattern</h2>
             <p className="mb-4 text-white/60">
-              For complete control over the OTP layout, use the composition pattern with individual components.
+              For custom layouts with separators, use the low-level components.
             </p>
 
             {/* Components Overview */}
@@ -336,21 +226,14 @@ export function VerifyForm() {
   InputOTPSeparator,
 } from 'irismail/react';
 
-// Custom layout with fine-grained control
-<InputOTP
-  maxLength={6}
-  value={otp}
-  onChange={setOtp}
-  size="lg"
-  variant="outline"
-  accent="iris"
->
+// Custom layout with 3-3 grouping
+<InputOTP maxLength={6} value={code} onChange={setCode}>
   <InputOTPGroup>
     <InputOTPSlot index={0} />
     <InputOTPSlot index={1} />
     <InputOTPSlot index={2} />
   </InputOTPGroup>
-  <InputOTPSeparator variant="dash" />
+  <InputOTPSeparator />
   <InputOTPGroup>
     <InputOTPSlot index={3} />
     <InputOTPSlot index={4} />
@@ -359,7 +242,7 @@ export function VerifyForm() {
 </InputOTP>`}
             />
             <Callout variant="info" title="When to use Composition">
-              Use the composition pattern when you need custom slot arrangements, multiple separators at different positions, or non-uniform groupings that the simplified OTP component doesn&apos;t support.
+              Use the composition pattern when you need custom slot arrangements, separators, or non-uniform groupings.
             </Callout>
           </section>
 
@@ -367,7 +250,7 @@ export function VerifyForm() {
           <section className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-6">
             <h2 className="text-xl font-semibold text-white">Try it out!</h2>
             <p className="mt-2 text-white/60">
-              Check out the interactive playground to try all variants and customization options.
+              Check out the interactive playground to test the component.
             </p>
             <Link
               href="/components/otp"
