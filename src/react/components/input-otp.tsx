@@ -5,18 +5,96 @@ import * as React from "react";
 import { cn } from "../../utils/constants";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Types & Configuration
+// ─────────────────────────────────────────────────────────────────────────────
+
+type OTPTheme = "dark" | "light";
+type OTPSize = "sm" | "md" | "lg";
+
+/** ClassNames API for fine-grained style customization */
+type OTPClassNames = {
+  /** Root container */
+  root?: string;
+  /** Group wrapper containing slots */
+  group?: string;
+  /** Individual digit slot */
+  slot?: string;
+  /** Slot when it contains a character */
+  slotFilled?: string;
+  /** Slot when focused/active */
+  slotActive?: string;
+  /** Slot in error state */
+  slotError?: string;
+  /** Separator between groups */
+  separator?: string;
+  /** Separator dash/line element */
+  separatorLine?: string;
+  /** Blinking caret */
+  caret?: string;
+};
+
+const slotSizeClasses: Record<OTPSize, string> = {
+  sm: "h-9 w-7 text-sm",
+  md: "h-11 w-9 text-base",
+  lg: "h-14 w-11 text-lg",
+};
+
+const caretSizeClasses: Record<OTPSize, string> = {
+  sm: "h-3 w-0.5",
+  md: "h-4 w-0.5",
+  lg: "h-5 w-0.5",
+};
+
+const themeClasses = {
+  dark: {
+    slot: {
+      base: "border-zinc-700 bg-zinc-800/50 text-white",
+      filled: "border-zinc-600 bg-zinc-800",
+      active: "border-zinc-500 bg-zinc-800",
+      error: "border-red-500/50 bg-red-500/5",
+      errorActive: "border-red-500/70",
+    },
+    caret: "bg-zinc-400",
+    separator: "bg-zinc-600",
+  },
+  light: {
+    slot: {
+      base: "border-zinc-300 bg-white text-zinc-900",
+      filled: "border-zinc-400 bg-zinc-50",
+      active: "border-zinc-500 bg-white",
+      error: "border-red-500/50 bg-red-50",
+      errorActive: "border-red-500/70",
+    },
+    caret: "bg-zinc-600",
+    separator: "bg-zinc-300",
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // InputOTP (Root) - Low-level component for composition pattern
 // ─────────────────────────────────────────────────────────────────────────────
 
 type InputOTPContextValue = {
   error?: boolean;
+  theme: OTPTheme;
+  slotSize: OTPSize;
+  classNames?: OTPClassNames;
 };
 
-const InputOTPStyleContext = React.createContext<InputOTPContextValue>({});
+const InputOTPStyleContext = React.createContext<InputOTPContextValue>({
+  theme: "dark",
+  slotSize: "md",
+});
 
 type InputOTPProps = React.ComponentPropsWithoutRef<typeof OTPInput> & {
   /** Show error styling */
   error?: boolean;
+  /** Color theme (default: "dark") */
+  theme?: OTPTheme;
+  /** Size of the slots (default: "md") */
+  slotSize?: OTPSize;
+  /** ClassNames API for style customization */
+  classNames?: OTPClassNames;
 };
 
 /**
@@ -43,19 +121,25 @@ type InputOTPProps = React.ComponentPropsWithoutRef<typeof OTPInput> & {
 const InputOTP = React.forwardRef<
   React.ElementRef<typeof OTPInput>,
   InputOTPProps
->(({ className, containerClassName, error, ...props }, ref) => (
-  <InputOTPStyleContext.Provider value={{ error }}>
-    <OTPInput
-      ref={ref}
-      containerClassName={cn(
-        "flex items-center gap-2 has-[:disabled]:opacity-50",
-        containerClassName
-      )}
-      className={cn("disabled:cursor-not-allowed", className)}
-      {...props}
-    />
-  </InputOTPStyleContext.Provider>
-));
+>(({ className, containerClassName, error, theme, slotSize, classNames, ...props }, ref) => {
+  const resolvedTheme: OTPTheme = theme ?? "dark";
+  const resolvedSlotSize: OTPSize = slotSize ?? "md";
+  
+  return (
+    <InputOTPStyleContext.Provider value={{ error, theme: resolvedTheme, slotSize: resolvedSlotSize, classNames }}>
+      <OTPInput
+        ref={ref}
+        containerClassName={cn(
+          "flex items-center gap-2 has-[:disabled]:opacity-50",
+          containerClassName,
+          classNames?.root
+        )}
+        className={cn("disabled:cursor-not-allowed", className)}
+        {...props}
+      />
+    </InputOTPStyleContext.Provider>
+  );
+});
 InputOTP.displayName = "InputOTP";
 
 // ─────────────────────────────────────────────────────────────────────────────
