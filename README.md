@@ -1,170 +1,132 @@
 # IrisMail
 
-A modular, secure, and easy-to-use Gmail-based Email and OTP service for Next.js applications, with built-in Shadcn UI support.
+A lightweight npm package for sending emails via Gmail and beautiful OTP input components for React.
 
 ## Features
 
-- 📧 **Email Service**: Simple Gmail-based email sending with minimal configuration.
-- 🔐 **Secure OTP**: Server-side OTP generation, encryption, and validation.
-- 🎨 **OTP UI Kit**: `InputOTPField`, slots, separators, and variants inspired by modern UI libraries.
-- ⚡ **React Hook**: `useOTP` hook for managing timers, rate limiting, and resend cooldowns.
-- 🛡️ **Type-Safe**: Built with TypeScript.
-- ⚙️ **Zero Config**: Just add your Gmail credentials - no SMTP configuration needed!
-
-## Documentation & playground
-
-Spin up the Astro-powered docs site (installation instructions, OTP playground, API guides):
-
-```bash
-npm run docs
-# or open docs locally
-cd docs && npm install && npm run dev
-```
-
-Production builds live under `docs/dist` via `npm run docs:build`.
+- 📧 **Email Service**: Simple Gmail-based email sending with minimal configuration
+- 🔢 **OTP Input**: Beautiful, accessible OTP input components with copy-paste support
+- ⚡ **Easy to Use**: Minimal API surface - just a few props to get started
+- 🛡️ **Type-Safe**: Built with TypeScript
+- ⚙️ **Zero Config**: Just add your Gmail credentials - no SMTP configuration needed
 
 ## Installation
 
 ```bash
 npm install irismail
-# or
-yarn add irismail
-# or
-pnpm add irismail
 ```
 
-## Usage
+## Email Service
 
-### 1. Server-Side Setup (API Routes)
-
-Initialize the service with your Gmail credentials only - SMTP settings are auto-configured.
-
-> **Note:** You'll need to generate a [Gmail App Password](https://support.google.com/accounts/answer/185833) for the `GMAIL_PASSWORD` environment variable.
+Send emails with just your Gmail credentials:
 
 ```typescript
-// app/api/send-otp/route.ts
-import { IrisMailService } from 'irismail/server';
-import { NextResponse } from 'next/server';
+import { IrisMail } from 'irismail/server';
 
-const irismail = new IrisMailService({
-  email: {
-    auth: {
-      user: process.env.GMAIL_USERNAME,
-      pass: process.env.GMAIL_PASSWORD,
-    },
-    defaults: {
-      from: {
-        name: 'My App',
-        address: process.env.GMAIL_USERNAME,
-      },
-    },
+const mail = new IrisMail({
+  auth: {
+    user: process.env.GMAIL_USER!,
+    pass: process.env.GMAIL_APP_PASSWORD!,
   },
-  secretKey: process.env.OTP_SECRET_KEY, // Must be 32 chars
 });
 
-export async function POST(req: Request) {
-  const { email } = await req.json();
-  
-  // Generate and encrypt OTP
-  const otp = irismail.otp.generateOTP();
-  const encryptedOtp = irismail.otp.encryptOTP(otp);
-  
-  // Send email
-  await irismail.email.sendEmail({
-    to: email,
-    subject: 'Your Verification Code',
-    html: `<p>Your code is: <b>${otp}</b></p>`,
-  });
-  
-  return NextResponse.json({ encryptedOtp });
-}
+await mail.sendMail({
+  from: process.env.GMAIL_USER!,
+  to: 'user@example.com',
+  subject: 'Hello!',
+  html: '<h1>Welcome</h1><p>Thanks for signing up!</p>',
+});
 ```
 
-### 2. Client-Side Setup (React Component)
+> **Note:** You'll need to generate a [Gmail App Password](https://support.google.com/accounts/answer/185833) for authentication.
 
-Use the `InputOTP` component and `useOTP` hook in your verification form.
+## OTP Input Component
+
+### Basic Usage
 
 ```tsx
-// components/verify-form.tsx
 'use client';
 
 import { useState } from 'react';
-import { InputOTP, InputOTPGroup, InputOTPSlot, useOTP } from 'irismail/react';
+import { OTP } from 'irismail/react';
 
-export function VerifyForm({ email }) {
-  const [otp, setOtp] = useState('');
-  const { otpTimeLeft, resendTimeLeft, formatTime } = useOTP({ email });
+export function VerifyForm() {
+  const [code, setCode] = useState('');
 
   return (
-    <div className="space-y-4">
-      <InputOTP
-        maxLength={6}
-        value={otp}
-        onChange={setOtp}
-      >
-        <InputOTPGroup>
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
-        </InputOTPGroup>
-      </InputOTP>
-      
-      <div className="text-sm">
-        Time remaining: {formatTime(otpTimeLeft)}
-      </div>
-    </div>
+    <OTP
+      value={code}
+      onChange={setCode}
+      onComplete={(value) => verify(value)}
+    />
   );
 }
 ```
 
-## Local Testing
+### With Error State
 
-Want to test the package locally before publishing? We've included a complete example app!
+```tsx
+<OTP
+  value={code}
+  onChange={setCode}
+  error={isInvalid}
+/>
+```
 
-1. **Navigate to the example directory**:
-   ```bash
-   cd example
-   ```
+### Custom Length
 
-2. **Set up environment variables**:
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your Gmail credentials:
-   # GMAIL_USERNAME=your-email@gmail.com
-   # GMAIL_PASSWORD=your-app-password
-   ```
+```tsx
+<OTP length={4} value={code} onChange={setCode} />
+```
 
-3. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
+### Composition Pattern
 
-4. **Open [http://localhost:3000](http://localhost:3000)** to see:
-   - Interactive OTP demo with email sending
-   - Live documentation with code examples
-   - All features working together
+For custom layouts with separators:
 
-See `example/README.md` for more details.
+```tsx
+import { 
+  InputOTP, 
+  InputOTPGroup, 
+  InputOTPSlot, 
+  InputOTPSeparator 
+} from 'irismail/react';
 
-## Publishing to NPM
+<InputOTP maxLength={6} value={code} onChange={setCode}>
+  <InputOTPGroup>
+    <InputOTPSlot index={0} />
+    <InputOTPSlot index={1} />
+    <InputOTPSlot index={2} />
+  </InputOTPGroup>
+  <InputOTPSeparator />
+  <InputOTPGroup>
+    <InputOTPSlot index={3} />
+    <InputOTPSlot index={4} />
+    <InputOTPSlot index={5} />
+  </InputOTPGroup>
+</InputOTP>
+```
 
-1.  **Login to NPM**:
-    ```bash
-    npm login
-    ```
+## OTP Props
 
-2.  **Build the package**:
-    ```bash
-    npm run build
-    ```
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `length` | number | 6 | Number of OTP digits |
+| `value` | string | — | Controlled input value |
+| `onChange` | (value: string) => void | — | Called when value changes |
+| `onComplete` | (value: string) => void | — | Called when all digits entered |
+| `disabled` | boolean | false | Disable the input |
+| `error` | boolean | false | Show error styling |
+| `autoFocus` | boolean | false | Auto focus first slot |
+| `name` | string | — | Name attribute for forms |
+| `className` | string | — | Container className |
 
-3.  **Publish**:
-    ```bash
-    npm publish --access public
-    ```
+## Documentation
+
+For full documentation and interactive examples, run the docs site:
+
+```bash
+npm run site
+```
 
 ## License
 
