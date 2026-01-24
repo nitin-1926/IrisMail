@@ -31,7 +31,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "site": "npm --prefix site run dev",
     "site:build": "npm --prefix site run build",
-    "site:start": "npm --prefix site run start"
+    "site:start": "npm --prefix site run start",
+    "prepublishOnly": "npm run build",
+    "postpublish": "git push origin --tags",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
   },
   "keywords": [
     "email",
