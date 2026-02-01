@@ -22,15 +22,15 @@ const otpProps = [
 ];
 
 const classNamesKeys = [
-  { name: 'root', description: 'Root container element' },
-  { name: 'group', description: 'Group wrapper containing slots' },
-  { name: 'slot', description: 'Individual digit slot (base state)' },
-  { name: 'slotFilled', description: 'Slot when it contains a digit' },
-  { name: 'slotActive', description: 'Slot when focused/active' },
-  { name: 'slotError', description: 'Slot in error state' },
-  { name: 'separator', description: 'Separator container' },
-  { name: 'separatorLine', description: 'The separator dash/line element' },
-  { name: 'caret', description: 'Blinking caret cursor' },
+  { name: 'root', type: 'string', description: 'Root container element' },
+  { name: 'group', type: 'string', description: 'Group wrapper containing slots' },
+  { name: 'slot', type: 'string', description: 'Individual digit slot (base state)' },
+  { name: 'slotFilled', type: 'string', description: 'Slot when it contains a digit' },
+  { name: 'slotActive', type: 'string', description: 'Slot when focused/active' },
+  { name: 'slotError', type: 'string', description: 'Slot in error state' },
+  { name: 'separator', type: 'string', description: 'Separator container' },
+  { name: 'separatorLine', type: 'string', description: 'The separator dash/line element' },
+  { name: 'caret', type: 'string', description: 'Blinking caret cursor' },
 ];
 
 export default function OTPInputDocsPage() {
