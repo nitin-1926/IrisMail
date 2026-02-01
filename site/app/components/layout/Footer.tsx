@@ -25,7 +25,7 @@ export function Footer() {
               IrisMail
             </Link>
             <p className="mt-2 max-w-xs text-sm text-zinc-600">
-              Email sending and OTP components for modern apps. Open source under MIT license.
+              Email sending and OTP components for modern apps. Open source under ISC license.
             </p>
             <p className="mt-3 text-xs text-zinc-700">
               OTP component built on{' '}

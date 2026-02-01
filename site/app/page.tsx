@@ -268,7 +268,7 @@ await mail.sendMail({
                 { label: 'Bundle Size', value: '< 5kb', desc: 'gzipped' },
                 { label: 'Dependencies', value: '2', desc: 'minimal' },
                 { label: 'TypeScript', value: '100%', desc: 'typed' },
-                { label: 'License', value: 'MIT', desc: 'open source' },
+                { label: 'License', value: 'ISC', desc: 'open source' },
               ].map((stat, i) => (
                 <div key={i} className="text-center">
                   <div className="text-3xl font-semibold text-white">{stat.value}</div>
